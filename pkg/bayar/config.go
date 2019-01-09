@@ -9,9 +9,10 @@ import (
 
 // Config describes the configuration values for Bayar.
 type Config struct {
-	HostAddress          string
-	PortNumber           int
-	GoogleSecretFilePath string
+	HostAddress                 string
+	PortNumber                  int
+	ApplicationDirectory        string
+	GoogleConfigurationFilename string
 }
 
 var cachedCfg Config
@@ -44,7 +45,22 @@ func LoadConfig() (Config, error) {
 		return cfg, err
 	}
 
+	cfg.loadDefaults()
 	cachedCfg = cfg
 
 	return cfg, nil
+}
+
+func (c *Config) loadDefaults() {
+	if c.GoogleConfigurationFilename == "" {
+		c.GoogleConfigurationFilename = "client_secret.json"
+	}
+
+	if c.PortNumber == 0 {
+		c.PortNumber = 3000
+	}
+
+	if c.HostAddress == "" {
+		c.HostAddress = "localhost"
+	}
 }
