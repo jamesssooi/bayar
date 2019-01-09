@@ -58,39 +58,3 @@ func handleEndGoogleAuthorization(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Fprintf(w, "You are successfully authorized!")
 }
-
-// func handleGoogleAuthenticate(w http.ResponseWriter, r *http.Request) {
-// 	googlecfg, err := googleauth.LoadGoogleAuthConfig()
-// 	if err != nil {
-// 		log.Fatalf("Error: %s", err)
-// 	}
-
-// 	q := r.URL.Query()
-// 	if q.Get("code") == "" {
-// 		authURL := googlecfg.AuthCodeURL("state-token", oauth2.AccessTypeOffline)
-// 		fmt.Fprintf(w, "<html>")
-// 		fmt.Fprintf(w, "Get your authorization code <a href='%s'>here</a>", authURL)
-// 		fmt.Fprintf(w, "<br><hr><br>")
-// 		fmt.Fprintf(w, "<form>")
-// 		fmt.Fprintf(w, "Then enter your code here: <input type='text' id='code' name='code'/><input type='submit' value='Submit'/>")
-// 		fmt.Fprintf(w, "</form>")
-// 		fmt.Fprintf(w, "</html>")
-// 		return
-// 	}
-
-// 	code := r.FormValue("code")
-// 	token, err := ProcessAuthorizationCode(code)
-// 	if err != nil {
-// 		fmt.Fprintf(w, "Error: %s", err)
-// 		return
-// 	}
-
-// 	bayarcfg := LoadConfig()
-
-// 	if err := CacheGoogleAuthenticationToken(token); err != nil {
-// 		fmt.Fprintf(w, "Error: %s", err)
-// 		return
-// 	}
-
-// 	fmt.Fprintf(w, "Token successfully saved!")
-// }

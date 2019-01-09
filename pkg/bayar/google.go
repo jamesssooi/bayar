@@ -1,14 +1,45 @@
 package bayar
 
 import (
+	"context"
 	"encoding/json"
 	"io/ioutil"
+	"net/http"
 	"os"
 	"path/filepath"
 
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/google"
 )
+
+func getGoogleClient() (*http.Client, error) {
+	ctx := context.Background()
+	config, _ := LoadConfig()
+
+	googlecfg, err := loadGoogleClientConfig()
+	if err != nil {
+		return &http.Client{}, err
+	}
+
+	tokenpath := filepath.Join(config.ApplicationDirectory, "token.json")
+	if _, err := os.Stat(tokenpath); os.IsNotExist(err) {
+		return &http.Client{}, err
+	}
+
+	file, err := os.Open(tokenpath)
+	defer file.Close()
+	if err != nil {
+		return &http.Client{}, err
+	}
+
+	token := &oauth2.Token{}
+	jsonErr := json.NewDecoder(file).Decode(token)
+	if jsonErr != nil {
+		return &http.Client{}, jsonErr
+	}
+
+	return googlecfg.Client(ctx, token), nil
+}
 
 func loadGoogleClientConfig() (*oauth2.Config, error) {
 	config, _ := LoadConfig()
