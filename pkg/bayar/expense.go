@@ -38,7 +38,7 @@ func (e Expense) insertIntoSpreadsheet(spreadsheetID string, sheet string) (int,
 	var vr sheets.ValueRange
 	vals := []interface{}{
 		nil,
-		time.Now().Local().Format("2019-01-01"),
+		time.Now().Local().Format("2006-01-02"),
 		e.Label,
 		e.Category,
 		nil,
