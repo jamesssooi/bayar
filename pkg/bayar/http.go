@@ -1,6 +1,7 @@
 package bayar
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
@@ -15,7 +16,7 @@ func ListenAndServe(addr string, port int) {
 
 	router.HandleFunc("/startAuthorization", handleStartGoogleAuthorization).Methods("GET")
 	router.HandleFunc("/endAuthorization", handleEndGoogleAuthorization).Methods("GET")
-	router.HandleFunc("/", handleExpenseCreate).Methods("GET")
+	router.HandleFunc("/newExpense", handleExpenseCreate).Methods("GET")
 
 	log.Printf("Starting Bayar server on %s:%d", addr, port)
 	log.Fatal(http.ListenAndServe(fmt.Sprintf("%s:%d", addr, port), router))
@@ -23,7 +24,31 @@ func ListenAndServe(addr string, port int) {
 
 func handleExpenseCreate(w http.ResponseWriter, r *http.Request) {
 	config, _ := LoadConfig()
-	fmt.Fprintf(w, "Hello world! %s", config.GoogleConfigurationFilename)
+	var e Expense
+
+	if err := json.NewDecoder(r.Body).Decode(&e); err != nil {
+		fmt.Fprintf(w, "Error: %s", err)
+		return
+	}
+
+	row, insertErr := e.insertIntoSpreadsheet(config.SpreadsheetID, config.SheetName)
+	if insertErr != nil {
+		fmt.Fprintf(w, "Error: %s", insertErr)
+		return
+	}
+
+	response := struct {
+		Status string `json:"status"`
+		Result int    `json:"result"`
+	}{"ok", row}
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(response)
+
+	if e.Label == "" {
+		log.Printf("EXPENSE - Cost: %.2f  Category: %s  Row: %d", e.Cost, e.Category, row)
+	} else {
+		log.Printf("EXPENSE - Cost: %.2f  Category: %s  Label: %s  Row: %d", e.Cost, e.Category, e.Label, row)
+	}
 }
 
 func handleStartGoogleAuthorization(w http.ResponseWriter, r *http.Request) {

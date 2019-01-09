@@ -13,6 +13,8 @@ type Config struct {
 	PortNumber                  int
 	ApplicationDirectory        string
 	GoogleConfigurationFilename string
+	SpreadsheetID               string
+	SheetName                   string
 }
 
 var cachedCfg Config
