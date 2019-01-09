@@ -14,10 +14,16 @@ type Config struct {
 	GoogleSecretFilePath string
 }
 
+var cachedCfg Config
+
 // LoadConfig loads configuration values for Bayar. Set the BAYAR_CONFIG
 // environment variable to specify the location of the configuration file.
 func LoadConfig() (Config, error) {
 	var cfg Config
+
+	if cachedCfg != (Config{}) {
+		return cachedCfg, nil
+	}
 
 	cfgPath, hasEnv := os.LookupEnv("BAYAR_CONFIG")
 	if !hasEnv {
@@ -37,6 +43,8 @@ func LoadConfig() (Config, error) {
 	if err := json.Unmarshal(b, &cfg); err != nil {
 		return cfg, err
 	}
+
+	cachedCfg = cfg
 
 	return cfg, nil
 }
