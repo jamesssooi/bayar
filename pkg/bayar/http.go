@@ -11,7 +11,7 @@ import (
 )
 
 // ListenAndServe creates a new Bayar server at the specified `addr` and `port`.
-func ListenAndServe(addr string, port int) {
+func ListenAndServe(addr string, port int) error {
 	router := mux.NewRouter().StrictSlash(true)
 
 	router.HandleFunc("/", handleIndex)
@@ -20,7 +20,7 @@ func ListenAndServe(addr string, port int) {
 	router.HandleFunc("/newExpense", handleExpenseCreate).Methods("POST")
 
 	log.Printf("Starting Bayar server (v%s) on %s:%d", version, addr, port)
-	log.Fatal(http.ListenAndServe(fmt.Sprintf("%s:%d", addr, port), router))
+	return http.ListenAndServe(fmt.Sprintf("%s:%d", addr, port), router)
 }
 
 func handleIndex(w http.ResponseWriter, r *http.Request) {

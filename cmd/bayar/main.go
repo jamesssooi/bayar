@@ -12,5 +12,5 @@ func main() {
 		log.Fatalf("Error: %s", err)
 	}
 
-	bayar.ListenAndServe(cfg.HostAddress, cfg.PortNumber)
+	log.Fatal(bayar.ListenAndServe(cfg.HostAddress, cfg.PortNumber))
 }
