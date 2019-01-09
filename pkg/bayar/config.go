@@ -2,6 +2,7 @@ package bayar
 
 import (
 	"encoding/json"
+	"errors"
 	"io/ioutil"
 	"os"
 	"path"
@@ -48,9 +49,29 @@ func LoadConfig() (Config, error) {
 	}
 
 	cfg.loadDefaults()
+	if err := cfg.checkCorrectness(); err != nil {
+		return cfg, err
+	}
+
 	cachedCfg = cfg
 
 	return cfg, nil
+}
+
+func (c *Config) checkCorrectness() error {
+	if c.SpreadsheetID == "" {
+		return errors.New("no SpreadsheetID provided in configuration file")
+	}
+
+	if c.SheetName == "" {
+		return errors.New("no SheetName provided in configuration file")
+	}
+
+	if c.ApplicationDirectory == "" {
+		return errors.New("no ApplicationDirectory provided in configuration file")
+	}
+
+	return nil
 }
 
 func (c *Config) loadDefaults() {
