@@ -14,12 +14,17 @@ import (
 func ListenAndServe(addr string, port int) {
 	router := mux.NewRouter().StrictSlash(true)
 
+	router.HandleFunc("/", handleIndex)
 	router.HandleFunc("/startAuthorization", handleStartGoogleAuthorization).Methods("GET")
 	router.HandleFunc("/endAuthorization", handleEndGoogleAuthorization).Methods("GET")
-	router.HandleFunc("/newExpense", handleExpenseCreate).Methods("GET")
+	router.HandleFunc("/newExpense", handleExpenseCreate).Methods("POST")
 
-	log.Printf("Starting Bayar server on %s:%d", addr, port)
+	log.Printf("Starting Bayar server (v%s) on %s:%d", version, addr, port)
 	log.Fatal(http.ListenAndServe(fmt.Sprintf("%s:%d", addr, port), router))
+}
+
+func handleIndex(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintf(w, "bayar server v%s", version)
 }
 
 func handleExpenseCreate(w http.ResponseWriter, r *http.Request) {
