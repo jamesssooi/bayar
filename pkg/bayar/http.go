@@ -32,13 +32,13 @@ func handleExpenseCreate(w http.ResponseWriter, r *http.Request) {
 	var e Expense
 
 	if err := json.NewDecoder(r.Body).Decode(&e); err != nil {
-		fmt.Fprintf(w, "Error: %s", err)
+		sendErrorResponse(w, err.Error(), 400)
 		return
 	}
 
 	row, insertErr := e.insertIntoSpreadsheet(config.SpreadsheetID, config.SheetName)
 	if insertErr != nil {
-		fmt.Fprintf(w, "Error: %s", insertErr)
+		sendErrorResponse(w, insertErr.Error(), 500)
 		return
 	}
 
@@ -59,7 +59,7 @@ func handleExpenseCreate(w http.ResponseWriter, r *http.Request) {
 func handleStartGoogleAuthorization(w http.ResponseWriter, r *http.Request) {
 	googlecfg, err := loadGoogleClientConfig()
 	if err != nil {
-		fmt.Fprintf(w, "Error: %s", err)
+		sendErrorResponse(w, err.Error(), 500)
 		return
 	}
 
@@ -77,14 +77,28 @@ func handleEndGoogleAuthorization(w http.ResponseWriter, r *http.Request) {
 	q := r.URL.Query()
 
 	if q.Get("code") == "" {
-		fmt.Fprintf(w, "Error: No authorization code provide.")
+		sendErrorResponse(w, "no authorization code provided", 400)
 		return
 	}
 
 	_, err := processAuthorizationCode(r.FormValue("code"))
 	if err != nil {
-		fmt.Fprintf(w, "Error: %s", err)
+		sendErrorResponse(w, err.Error(), 500)
+		return
 	}
 
 	fmt.Fprintf(w, "You are successfully authorized!")
+}
+
+func sendErrorResponse(w http.ResponseWriter, msg string, code int) {
+
+	d := struct {
+		Ok    bool   `json:"ok"`
+		Error string `json:"error"`
+	}{false, msg}
+	m, _ := json.MarshalIndent(d, "", "  ")
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(code)
+	fmt.Fprint(w, string(m))
 }
