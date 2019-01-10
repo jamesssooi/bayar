@@ -65,7 +65,7 @@ func handleStartGoogleAuthorization(w http.ResponseWriter, r *http.Request) {
 
 	url := googlecfg.AuthCodeURL("state-token", oauth2.AccessTypeOffline)
 	fmt.Fprintf(w, "<html>")
-	fmt.Fprintf(w, "Get your authorization code <a href='%s'>here</a>", url)
+	fmt.Fprintf(w, "Get your authorization code <a href='%s' target='_blank'>here</a>", url)
 	fmt.Fprintf(w, "<br><hr><br>")
 	fmt.Fprintf(w, "<form method='GET' action='/endAuthorization'>")
 	fmt.Fprintf(w, "Then enter your code here: <input type='text' id='code' name='code'/><input type='submit' value='Submit'/>")
