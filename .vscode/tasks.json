@@ -1,0 +1,33 @@
+{
+  // See https://go.microsoft.com/fwlink/?LinkId=733558
+  // for the documentation about the tasks.json format
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Build: Windows (amd64)",
+      "type": "shell",
+      "command": ".\\scripts\\build-windows_amd64.bat",
+      "group": "build"
+    },
+    {
+      "label": "Run: Windows (amd64)",
+      "type": "shell",
+      "command": ".\\dist\\win_amd64\\bayar.exe",
+    },
+    {
+      "label": "Build: All",
+      "type": "shell",
+      "command": ".\\scripts\\build-windows_amd64.bat & .\\scripts\\build-linux_amd64.bat",
+      "group": "build"
+    },
+    {
+      "label": "Build and Run: Windows (amd64)",
+      "type": "shell",
+      "command": ".\\scripts\\build-windows_amd64.bat && .\\dist\\win_amd64\\bayar.exe",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
+    }
+  ]
+}
