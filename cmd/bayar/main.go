@@ -3,7 +3,7 @@ package main
 import (
 	"log"
 
-	"github.com/jamesssooi/expense/pkg/bayar"
+	"github.com/jamesssooi/bayar/pkg/bayar"
 )
 
 func main() {
