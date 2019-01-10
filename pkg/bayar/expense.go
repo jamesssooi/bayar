@@ -24,7 +24,8 @@ func NewExpense(label string, category string, cost float32) Expense {
 	return e
 }
 
-func (e Expense) insertIntoSpreadsheet(spreadsheetID string, sheet string) (int, error) {
+// InsertIntoSpreadsheet logs this expense in a Google Sheet
+func (e Expense) InsertIntoSpreadsheet(spreadsheetID string, sheet string) (int, error) {
 	client, err := getGoogleClient()
 	if err != nil {
 		return -1, err

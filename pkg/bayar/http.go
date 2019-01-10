@@ -36,7 +36,7 @@ func handleExpenseCreate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	row, insertErr := e.insertIntoSpreadsheet(config.SpreadsheetID, config.SheetName)
+	row, insertErr := e.InsertIntoSpreadsheet(config.SpreadsheetID, config.SheetName)
 	if insertErr != nil {
 		sendErrorResponse(w, insertErr.Error(), 500)
 		return
