@@ -13,6 +13,7 @@ type Config struct {
 	HostAddress                 string
 	PortNumber                  int
 	ApplicationDirectory        string
+	VerificationToken           string
 	GoogleConfigurationFilename string
 	SpreadsheetID               string
 	SheetName                   string
@@ -69,6 +70,10 @@ func (c *Config) checkCorrectness() error {
 
 	if c.ApplicationDirectory == "" {
 		return errors.New("no ApplicationDirectory provided in configuration file")
+	}
+
+	if c.VerificationToken == "" {
+		return errors.New("no VerificationToken provided in configuration file")
 	}
 
 	return nil

@@ -10,24 +10,24 @@ It is used in conjunction with the [Apple Shortcuts](https://support.apple.com/e
 $ mkdir /path/to/dir
 ```
 
-**Step 2:** Create a Bayar configuration file.  See [Configuration](#Configuration).
+**Step 2:**  Download a [Google API OAuth 2.0](https://developers.google.com/api-client-library/python/auth/installed-app#creatingcred) configuration file into your Bayar application directory
+
+**Step 3:** Create and configure a Bayar configuration file.  See [Configuration](#Configuration).
 ```bash
 $ vim bayar.json
 ```
 
-**Step 3:** Set the `BAYAR_CONFIG` environment variable to point to the configuration file.
+**Step 4:** Set the `BAYAR_CONFIG` environment variable to point to the configuration file.
 ```bash
 $ export BAYAR_CONFIG=/path/to/config
 ```
-
-**Step 4:**  Download a [Google API OAuth 2.0](https://developers.google.com/api-client-library/python/auth/installed-app#creatingcred) configuration file into your Bayar application directory
 
 **Step 5:** Compile and run the Bayar binary file. See [Building](#Building).
 ```bash
 $ ./bayar
 ```
 
-**Step 6:** Visit `http://localhost:8888/startAuthorization` to authorize the Bayar application with Google
+**Step 6:** Visit http://localhost:8888/startAuthorization to authorize the Bayar application with Google
 
 **Step 7:** You're done! You can start making API calls at http://localhost:8888/newExpense
 
@@ -40,6 +40,7 @@ Bayar refers to a JSON configuration file specified by the `BAYAR_CONFIG` enviro
   "ApplicationDirectory": "", // (Required) Bayar will store application data here
   "SpreadsheetID": "", // (Required) The Google Sheets spreadsheet ID
   "SheetName": "", // (Required) The name of the sheet to log expenses
+  "VerificationToken": "<token>", // (Required) An arbitrary token that must be provided by the client
   "HostAddress": "localhost", // (Optional) Defaults to localhost
   "PortNumber": 8888, // (Optional) Defaults to 8888
   "GoogleConfigurationFileName": "client_secret.json", // (Optional) The name of the Google API service file, defaults to client_secret.json
@@ -56,12 +57,15 @@ Run any one of the scripts in the `scripts/` directory from the project root dir
 
 ## API Reference
 
-#### POST `/newExpense`
-Log a new expense into the spreadsheet.  
-* Request Body: `JSON`
-```js
+#### `POST` /newExpense
+Log a new expense into the spreadsheet.
+
+```http
+Authorization: Bearer <token>
+Content-Type: application/json
+
 {
-  "label": "McDonalds", // optional
+  "label": "McDonalds (optional)",
   "category": "Food",
   "cost": 9.95
 }

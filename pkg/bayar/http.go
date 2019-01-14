@@ -2,9 +2,11 @@ package bayar
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"log"
 	"net/http"
+	"regexp"
 
 	"github.com/gorilla/mux"
 	"golang.org/x/oauth2"
@@ -31,8 +33,13 @@ func handleExpenseCreate(w http.ResponseWriter, r *http.Request) {
 	config, _ := LoadConfig()
 	var e Expense
 
-	if err := json.NewDecoder(r.Body).Decode(&e); err != nil {
-		sendErrorResponse(w, err.Error(), 400)
+	if tokenErr := checkVerificationToken(r.Header); tokenErr != nil {
+		sendErrorResponse(w, tokenErr.Error(), 400)
+		return
+	}
+
+	if decodeErr := json.NewDecoder(r.Body).Decode(&e); decodeErr != nil {
+		sendErrorResponse(w, decodeErr.Error(), 400)
 		return
 	}
 
@@ -91,7 +98,6 @@ func handleEndGoogleAuthorization(w http.ResponseWriter, r *http.Request) {
 }
 
 func sendErrorResponse(w http.ResponseWriter, msg string, code int) {
-
 	d := struct {
 		Ok    bool   `json:"ok"`
 		Error string `json:"error"`
@@ -101,4 +107,20 @@ func sendErrorResponse(w http.ResponseWriter, msg string, code int) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(code)
 	fmt.Fprint(w, string(m))
+}
+
+func checkVerificationToken(headers http.Header) error {
+	re := regexp.MustCompile(`^Bearer (.+)$`)
+	match := re.FindStringSubmatch(headers.Get("Authorization"))
+	if match == nil {
+		return errors.New("missing verification token")
+	}
+
+	token := match[1]
+	config, _ := LoadConfig()
+	if token != config.VerificationToken {
+		return errors.New("invalid verification token")
+	}
+
+	return nil
 }
